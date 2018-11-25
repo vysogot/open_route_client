@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     open_route_client (0.1.0)
+      json (~> 2.1)
       rest-client (~> 2.0.2)
 
 GEM
@@ -12,6 +13,7 @@ GEM
       unf (>= 0.0.5, < 1.0.0)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
+    json (2.1.0)
     mime-types (3.2.2)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2018.0812)

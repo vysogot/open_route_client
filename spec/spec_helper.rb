@@ -1,5 +1,7 @@
 require "bundler/setup"
 require "open_route_client"
+require "rest-client"
+require "json"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
