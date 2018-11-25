@@ -1,8 +1,6 @@
 # OpenRouteClient
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/open_route_client`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+This gem provides a Ruby wrapper for the OpenRouteService and is in the super alpha stage. I needed this API for one project and now I'll use more of it so it will probably grow.
 
 ## Installation
 
@@ -22,7 +20,15 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+There are two simple use cases write now.
+
+```
+# returns location coordinates
+OpenRouteClient.locate("Muzeum Narodowe, Warsaw, Poland")
+
+# returns distance in kilometers
+OpenRouteClient.fetch_distance("Muzeum Narodowe, Warsaw, Poland", "Muzeum Narodowe, Poznan, Poland")
+```
 
 ## Development
 
