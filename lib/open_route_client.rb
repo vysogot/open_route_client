@@ -4,41 +4,57 @@ require "json"
 
 module OpenRouteClient
 
-  OPENROUTE_API_KEY = ENV['OPENROUTE_API_KEY'] || ""
-  OPENROUTE_URI = 'https://api.openrouteservice.org/'
   HEADERS = { :accept => 'application/json; charset=utf-8' }
 
   class << self
 
-    def fetch_distance(start_address, destination_address)
+    def api_key
+      @api_key ||= ENV.fetch('OPENROUTE_API_KEY') { '' }
+    end
+
+    def uri
+      @uri ||= ENV.fetch('OPENROUTE_URI') { 'https://api.openrouteservice.org/' }
+    end
+
+    def remote_uri
+      @remote_uri ||= ENV.fetch('REMOTE_URI') { uri }
+    end
+
+    def distance_between_addresses(start_address, destination_address, profile)
       start = locate(start_address)
       destination = locate(destination_address)
+      distance(start, destination, profile)
+    end
 
-      coordinates = start[:latitude].to_s + "," + start[:longitude].to_s + "|" +
-        destination[:latitude].to_s + "," + destination[:longitude].to_s
+    def distance(start, destination, profile='driving-car')
+      json_body = route(start, destination, profile)
 
-      api_endpoint = OPENROUTE_URI + 'directions'
+      json_body["features"].first['properties']["summary"]["distance"]
+    end
+
+    def route(start, destination, profile='driving-car')
+
+      start_coords = "#{start[:longitude]},#{start[:latitude]}"
+      end_coords =  "#{destination[:longitude]},#{destination[:latitude]}"
+
+      api_endpoint = uri + 'v2/directions/' + profile
 
       params = { params: {
-        api_key: OPENROUTE_API_KEY,
-        coordinates: coordinates,
-        profile: 'cycling-road'
-      } }.merge(HEADERS)
+        api_key: api_key,
+        start: start_coords,
+        end: end_coords
+      } }
+
+      puts params
 
       response = RestClient.get(api_endpoint, params)
-      json_body = JSON.parse(response.body)
-
-      distance_in_meters = json_body["routes"].first["summary"]["distance"]
-      distance_in_kilometers = (distance_in_meters/1000).round(0)
-
-      return distance_in_kilometers
+      JSON.parse(response.body)
     end
 
     def locate(address)
-      api_endpoint = OPENROUTE_URI + 'geocode/search'
-
+      api_endpoint = remote_uri + 'geocode/search'
       params = { params: {
-        api_key: OPENROUTE_API_KEY,
+        api_key: api_key,
         text: address
       } }.merge(HEADERS)
 
@@ -47,9 +63,9 @@ module OpenRouteClient
 
       coordinates = json_body["features"].first["geometry"]["coordinates"]
 
-      return {
-        latitude: coordinates[0],
-        longitude: coordinates[1]
+      {
+        longitude: coordinates[0],
+        latitude: coordinates[1]
       }
     end
 
